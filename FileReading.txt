@@ -1,0 +1,90 @@
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.FileReader;
+import javax.swing.JOptionPane;
+
+public class FileClass
+{
+    int counter = 0;
+    ArrayList<Propertyable> arrProperties = new ArrayList<Propertyable>();
+
+    public void readFromFile()
+    {
+        try
+        {
+            Scanner input = new Scanner(new FileReader("properties.txt"));
+            while(input.hasNextLine())
+            {
+                String line = input.nextLine();
+                String [] data = line.split("#");
+                String ownerName;
+                String number;
+                int size;
+                int duration;
+
+                switch(Character.toUpperCase(data[0].charAt(0)))
+                {
+                    case 'R': 
+                        ownerName = data[1];
+                        number = data[2];
+                        duration = Integer.parseInt(data[3]);
+                        char type = data[4].charAt(0);
+                        
+                        int bedroom = Integer.parseInt(data[5]);
+                        int bathroom = Integer.parseInt(data[6]);
+                        arrProperties.add(new ResProperty(ownerName,number,duration,type,bedroom,bathroom));
+                        break;
+                    case 'B':
+                        ownerName = data[1];
+                        number = data[2];
+                        duration = Integer.parseInt(data[3]);        
+                        size = Integer.parseInt(data[4]);
+                        arrProperties.add(new BussProperty(ownerName,number,duration,size));
+                        break;
+                }
+                counter++;
+            }
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(null, "Error reading from file");
+        }
+    }
+
+    public int getCount()
+    {
+        return counter;
+    }
+
+    public ArrayList<Propertyable> getArray()
+    {
+        return arrProperties;
+    }
+    
+    public void writeTownHToFile()
+    {
+        try
+        {
+            PrintWriter file = new PrintWriter(new PrintWriter("townhouses.txt"));
+            
+            for(int i = 0; i < counter; i++)
+            {
+                if(arrProperties.get(i) instanceof ResProperty)
+                    if(((ResProperty)arrProperties.get(i)).getType() == 'T'){
+                        String output = String.format("%-15s%-15sR%.2f",((Property)arrProperties.get(i)).getOwnerName(),
+                        ((Property)arrProperties.get(i)).getContactNumber(),(double)arrProperties.get(i).calcMonthRent());
+                        file.println(output);
+                    }
+                    
+                
+            }
+            file.close();
+        }
+        catch(Exception e)
+        {
+            JOptionPane.showMessageDialog(null,"");
+        }
+    }
+}
